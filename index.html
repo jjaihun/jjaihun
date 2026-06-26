@@ -687,7 +687,7 @@
     }catch(e){}}
     if(!DB.books||typeof DB.books!=="object")DB.books={};
     if(!DB.market||typeof DB.market!=="object")DB.market={};
-    if(!Object.keys(DB.books).length){DB.current="TQQQ";DB.books["TQQQ"]=defBook("TQQQ");}
+    if(!Object.keys(DB.books).length){DB.current="TQQQ";DB.books["TQQQ"]=defBook("TQQQ");DB.books["SOXL"]=defBook("SOXL");}
     if(!DB.current||!DB.books[DB.current])DB.current=Object.keys(DB.books)[0];
     Object.keys(DB.books).forEach(function(k){var b=DB.books[k];if(!b.version)b.version="v2.2";
       if(b.t4==null)b.t4=0; if(!b.mode4)b.mode4="normal"; if(b.cash4==null)b.cash4=0; if(b.star5==null)b.star5=0;});
