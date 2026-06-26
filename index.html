@@ -445,9 +445,9 @@
         </select>
       </div>
       <div class="set-row" id="sellCustomRow" style="display:none"><span class="lab">쿼터 매도 비중 (%)</span><input id="setQuarterPct" inputmode="decimal" value="25"></div>
-      <div class="set-row"><span class="lab">Finnhub API 키 <span style="color:var(--faint);font-weight:500">(전 종목 공통)</span></span><input id="setApiKey" type="password" placeholder="키 붙여넣기" autocomplete="off"></div>
+      <div class="set-row"><span class="lab">개인 Finnhub API 키 <span style="color:var(--faint);font-weight:500">(선택)</span></span><input id="setApiKey" type="password" placeholder="비워두면 기본 키 사용" autocomplete="off"></div>
       <div class="set-row"><span class="lab">이 계산기 (<span id="curSymLabel" class="num">TQQQ</span>) 삭제</span><button class="abtn ghost" id="delBookBtn" type="button" style="width:auto;padding:7px 14px;color:var(--loss);border-color:#4a2b28">삭제</button></div>
-      <div class="led-hint" style="margin-top:10px">실시간 시세는 <b>finnhub.io</b> 무료 가입 후 발급되는 API 키가 필요합니다(무료 60회/분). 키는 서버로 가지 않고 이 기기 브라우저에만 저장됩니다.</div>
+      <div class="led-hint" style="margin-top:10px">기본 키가 내장되어 있어 <b>가입 없이 바로 시세 조회</b>가 됩니다. 공용 한도(60회/분) 공유라 가끔 지연될 수 있으니, 자주 쓰면 <b>finnhub.io</b>에서 무료 개인 키를 발급받아 위에 넣으면 우선 사용됩니다. 키는 이 기기 브라우저에만 저장됩니다.</div>
     </div>
   </details>
 
@@ -667,6 +667,8 @@
   }
 
   var DBKEY="imb_v22";
+  var DEFAULT_KEY="d8usi19r01qrt65u2qugd8usi19r01qrt65u2qv0";   // 공용 기본 키 (가입 없이 시세 조회)
+  function effKey(){return (DB.apiKey||"").trim()||DEFAULT_KEY;}  // 개인 키 우선, 없으면 기본 키
   var DB={apiKey:"",current:"TQQQ",books:{}};
   var S=null;  // 활성 종목의 작업 상태 (DB.books[DB.current] 참조)
 
@@ -1033,8 +1035,7 @@
   }
 
   function fetchQuote(){
-    var key=(DB.apiKey||"").trim(), sym=(DB.current||"").trim().toUpperCase();
-    if(!key){toast("설정에서 Finnhub API 키를 입력하세요");$("setBox").open=true;return;}
+    var key=effKey(), sym=(DB.current||"").trim().toUpperCase();
     if(!sym){toast("종목을 선택하세요");return;}
     var btn=$("fetchBtn"); btn.disabled=true; var old=btn.textContent; btn.textContent="…";
     fetch("https://finnhub.io/api/v1/quote?symbol="+encodeURIComponent(sym)+"&token="+encodeURIComponent(key))
@@ -1069,7 +1070,7 @@
     $("priceSrc").textContent="";
     syncSettingsUI();
     render(); renderLedger();
-    if(DB.apiKey&&S.qty>0)fetchQuote();
+    if(S.qty>0)fetchQuote();
   }
   function switchBook(k){
     if(!DB.books[k])return;
@@ -1174,8 +1175,7 @@
   }
 
   function fetchAllQuotes(){
-    var key=(DB.apiKey||"").trim();
-    if(!key){toast("설정에서 Finnhub API 키를 입력하세요");return;}
+    var key=effKey();
     var keys=Object.keys(DB.books), i=0, btn=$("pfRefresh"), old=btn.textContent;
     btn.disabled=true; btn.textContent="조회중…";
     (function next(){
@@ -1373,7 +1373,7 @@
     var dd=new Date(),pad=function(n){return(n<10?"0":"")+n;};
     $("ledDate").value=dd.getFullYear()+"-"+pad(dd.getMonth()+1)+"-"+pad(dd.getDate());
     render(); renderLedger();
-    if(DB.apiKey&&S.qty>0){fetchQuote();}   // 새로고침 시 1회 자동 조회
+    if(S.qty>0){fetchQuote();}   // 새로고침 시 1회 자동 조회
 
     $("tabCalc").addEventListener("click",function(){showView("calc");});
     $("tabPf").addEventListener("click",function(){showView("pf");});
