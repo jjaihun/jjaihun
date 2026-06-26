@@ -609,7 +609,7 @@
         <p class="g-item dim">네 지표를 합쳐 0~100 점수로 냅니다. 높을수록 과열(비싼 편), 낮을수록 저점권(싼 편).</p>
       </div>
     </details>
-    <div class="led-hint">점수가 높을수록 <b>과열</b>(매도·신규진입 주의), 낮을수록 <b>저점권</b>(분할매수 우호). Stooq 일봉으로 계산하며, 자동조회가 막히면 수동 입력을 쓰세요.</div>
+    <div class="led-hint">점수가 높을수록 <b>과열</b>(매도·신규진입 주의), 낮을수록 <b>저점권</b>(분할매수 우호). Yahoo·Stooq 일봉으로 계산하며, 자동조회가 막히면 수동 입력을 쓰세요.</div>
 
     <details id="baroManual">
       <summary>수동 입력 <span class="arr">›</span></summary>
@@ -625,7 +625,7 @@
 </div><!-- /marketView -->
 
 <footer class="site-foot">
-  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.2.5</b></div>
+  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.2.6</b></div>
   <div class="foot-line">© 2026 JJAIHUN. All rights reserved.</div>
   <div class="foot-line">For 투자메 use only.</div>
   <div class="foot-line dim">무단 배포 및 사용을 금지합니다.</div>
@@ -1285,7 +1285,7 @@
     setBar("Ma",((m.dev>=0?"+":"")+m.dev.toFixed(1)+"%"),h.maH);
     setBar("Hi",(m.hi.toFixed(0)+"%"),h.hiH);
     setBar("Mom",((m.mom>=0?"+":"")+m.mom.toFixed(1)+"%"),h.momH);
-    $("baroTs").textContent=(m.proxy==="spy.us"?"SPY":"QQQ")+" · "+(m.manual?"수동":"Stooq")+(m.ts?(" · "+m.ts):"");
+    $("baroTs").textContent=(m.proxy==="spy.us"?"SPY":"QQQ")+" · "+(m.manual?"수동입력":(m.src||"자동"))+(m.ts?(" · "+m.ts):"");
   }
   function parseStooqCsv(t){
     if(/<html/i.test(t)||t.indexOf("Close")<0)throw new Error("blocked");
@@ -1321,28 +1321,28 @@
     var ct=function(u){return "https://api.codetabs.com/v1/proxy/?quest="+encodeURIComponent(u);};
     // Yahoo(JSON) 우선 → Stooq(CSV) 폴백, 신뢰도 높은 프록시 순차 (각 6초 타임아웃)
     var attempts=[
-      {u:ct(yahoo),p:parseYahoo},
-      {u:cx(yahoo),p:parseYahoo},
-      {u:ao(yahoo),p:parseYahoo},
-      {u:ct(stooq),p:parseStooqCsv},
-      {u:ao(stooq),p:parseStooqCsv},
-      {u:cx(stooq),p:parseStooqCsv},
-      {u:stooq,p:parseStooqCsv}
+      {u:ct(yahoo),p:parseYahoo,s:"Yahoo"},
+      {u:cx(yahoo),p:parseYahoo,s:"Yahoo"},
+      {u:ao(yahoo),p:parseYahoo,s:"Yahoo"},
+      {u:ct(stooq),p:parseStooqCsv,s:"Stooq"},
+      {u:ao(stooq),p:parseStooqCsv,s:"Stooq"},
+      {u:cx(stooq),p:parseStooqCsv,s:"Stooq"},
+      {u:stooq,p:parseStooqCsv,s:"Stooq"}
     ];
     var i=0;
     function next(){
       if(i>=attempts.length)return Promise.reject(new Error("all-failed"));
       var a=attempts[i++];
-      return fetchTimeout(a.u,6000).then(a.p).catch(function(){return next();});
+      return fetchTimeout(a.u,6000).then(a.p).then(function(closes){return {closes:closes,src:a.s};}).catch(function(){return next();});
     }
     return next();
   }
   function refreshBarometer(){
     var proxy=$("baroProxy").value||"qqq.us";
     var btn=$("baroRefresh"),old=btn.textContent; btn.disabled=true; btn.textContent="조회중…";
-    fetchStooq(proxy).then(function(closes){
-      var ind=indicatorsFrom(closes),m=ind;
-      m.score=scoreFrom(heatsFrom(ind)); m.proxy=proxy; m.ts=nowLabel(); m.manual=false;
+    fetchStooq(proxy).then(function(res){
+      var ind=indicatorsFrom(res.closes),m=ind;
+      m.score=scoreFrom(heatsFrom(ind)); m.proxy=proxy; m.ts=nowLabel(); m.manual=false; m.src=res.src;
       DB.market=m; store.set(DBKEY,JSON.stringify(DB));
       renderBarometer(); fillManual(); toast("마켓 갱신 · 점수 "+Math.round(m.score));
     }).catch(function(){
@@ -1472,8 +1472,8 @@
     $("v4Star5Btn").addEventListener("click",function(){
       var sym=(DB.current||"").toLowerCase().replace(/[^a-z]/g,"")+".us";
       toast("5일 평균 조회 중…");
-      fetchStooq(sym).then(function(closes){
-        var last5=closes.slice(-5),avg5=last5.reduce(function(a,b){return a+b;},0)/last5.length;
+      fetchStooq(sym).then(function(res){
+        var closes=res.closes,last5=closes.slice(-5),avg5=last5.reduce(function(a,b){return a+b;},0)/last5.length;
         S.star5=r2(avg5);save();$("v4Star5").value=S.star5;render();toast("5일 평균 "+fmtUSD(S.star5));
       }).catch(function(){toast("조회 실패 — 직접 입력하세요");});
     });
