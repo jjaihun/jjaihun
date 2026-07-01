@@ -639,7 +639,7 @@
 </div><!-- /marketView -->
 
 <footer class="site-foot">
-  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.4.1</b></div>
+  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.4.2</b></div>
   <div class="foot-line">© 2026 JJAIHUN. All rights reserved.</div>
   <div class="foot-line">For 투자메 use only.</div>
   <div class="foot-line dim">무단 배포 및 사용을 금지합니다.</div>
@@ -1033,7 +1033,7 @@
       $("cAdj").textContent="—"; $("cBon").textContent="—";
       var u0=split>0?(S.seed/split):0;
       box.innerHTML='<div class="newcycle"><div class="big">신규 1회차로 사이클 시작</div>'+
-        '<div class="sub">1회 매수금 <span class="amt">'+fmtUSD0(u0)+'</span>(원금÷'+split+')을 종가보다 10~15% 위 값으로 LOC 매수하세요.<br>체결 후 평단·보유수량·잔금·T값을 입력하면 자동 계산이 시작됩니다.</div></div>';
+        '<div class="sub">1회 매수금 <span class="amt">'+fmtUSD0(u0)+'</span>(원금÷'+split+') 만큼 매수하세요. 첫 매수는 평단이 없어 <b>방식 자유</b> — 시장가로 사거나, 종가에 맞추려면 종가보다 10~15% 위 LOC로 걸어도 됩니다.<br>체결 후 매매기록에 입력하면 평단·잔금·T가 자동 반영되며 계산이 시작됩니다.</div></div>';
       hint.innerHTML="첫 매수는 <b>원금 ÷ 분할수</b> 금액으로 시작합니다. T=0, 잔금=원금에서 출발해요.";
       return;
     }
