@@ -51,6 +51,16 @@
   .eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
   .ord-last{font-size:11.5px;color:var(--faint);margin:-4px 0 12px;font-family:var(--mono)}
   .ord-last b{color:var(--dim);font-weight:700}
+  .tsug-box{margin-top:11px;padding:12px 13px;border:1px solid var(--navy-br);border-radius:10px;
+    background:rgba(91,143,212,.09)}
+  .tsug-box .tsug-t{font-size:13px;color:var(--txt);font-weight:600;line-height:1.5}
+  .tsug-box .tsug-t b{color:var(--buy);font-family:var(--mono)}
+  .tsug-box .tsug-sub{font-size:11.5px;color:var(--faint);margin-top:3px}
+  .tsug-box .tsug-row{display:flex;gap:8px;margin-top:10px}
+  .tsug-box .tsug-row button{flex:1;font-family:var(--sans);font-size:13px;font-weight:700;
+    padding:9px;border-radius:8px;cursor:pointer;border:1px solid var(--line);-webkit-appearance:none;appearance:none}
+  .tsug-box .tsug-ok{background:var(--buy);border-color:var(--buy);color:#fff}
+  .tsug-box .tsug-no{background:var(--surface2);color:var(--dim)}
 
   /* T-gauge */
   .gauge-wrap{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px}
@@ -396,7 +406,7 @@
   </div>
   <div class="v4-grid">
     <div class="field">
-      <label>잔금 ($)</label>
+      <label>잔금 ($) <span class="src">기록에서 자동</span></label>
       <div class="row"><span class="pre">$</span><input id="v4Cash" inputmode="numeric" placeholder="0" autocomplete="off"></div>
     </div>
     <div class="field" id="v4Star5Field">
@@ -404,7 +414,7 @@
       <div class="row"><span class="pre">$</span><input id="v4Star5" inputmode="decimal" placeholder="0.00" autocomplete="off"><button class="fetch-btn" id="v4Star5Btn" type="button">↻ 5일</button></div>
     </div>
   </div>
-  <div class="v4-tlbl">T값 업데이트 <span>· 오늘 체결된 것 탭</span></div>
+  <div class="v4-tlbl">T값 수동 보정 <span>· 매매기록 입력 시 자동 제안됨 · 여기선 직접 조정만</span></div>
   <div class="v4-tbtns" id="v4Tbtns"></div>
   <p class="v4-hint" id="v4Hint"></p>
 </section>
@@ -482,6 +492,7 @@
         <button class="abtn" id="ledAddBtn">기록 추가</button>
         <button class="abtn ghost" id="ledPushBtn">현재 포지션에 반영</button>
       </div>
+      <div id="tSuggest" class="tsug-box" style="display:none"></div>
       <div id="ledTableWrap"><div class="empty">아직 기록이 없습니다. 종가·체결수량을 입력해 추가하세요.</div></div>
       <div class="led-sum"><span class="k">누적 실현손익</span><span class="v num" id="ledReal">$0</span></div>
       <div class="btn-row" style="margin-top:12px">
@@ -628,7 +639,7 @@
 </div><!-- /marketView -->
 
 <footer class="site-foot">
-  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.3.0</b></div>
+  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.4.1</b></div>
   <div class="foot-line">© 2026 JJAIHUN. All rights reserved.</div>
   <div class="foot-line">For 투자메 use only.</div>
   <div class="foot-line dim">무단 배포 및 사용을 금지합니다.</div>
@@ -780,6 +791,45 @@
         else lastEl.style.display="none";
       } else lastEl.style.display="none";
     } else lastEl.style.display="none";
+  }
+
+  function offerTSuggestion(fill, preT, preCash){
+    var box=$("tSuggest"); if(!box)return;
+    if(S.version!=="v4"){box.style.display="none";return;}
+    var split=S.split||40, mode=S.mode4||"normal";
+    var bq=toNum(fill.bq),bp=toNum(fill.bp),sq=toNum(fill.sq),sp=toNum(fill.sp);
+    var buyAmt=bq*bp, sell=sq>0;
+    var newT=preT, label="", ok=false;
+    if(mode==="reverse"){
+      var mult=1-2/split;
+      if(sell){newT=newT*mult; label="등분매도 ×"+mult.toFixed(2);}
+      if(bq>0){newT=newT+(split-newT)*0.25; label=(label?label+" + ":"")+"쿼터매수 +(분할−T)¼";}
+      ok=(sell||bq>0);
+    }else{
+      var oneBuy=(split-preT>0)?preCash/(split-preT):0;
+      var ratio=oneBuy>0?buyAmt/oneBuy:(bq>0?1:0);
+      var part=ratio>=0.75?"full":(ratio>=0.25?"half":"none");
+      if(sell&&part==="full"){newT=preT*0.25+1; label="매도→매수 ¼+1";}
+      else if(sell&&part==="half"){newT=preT*0.25+0.5; label="매도→½매수 ¼+½";}
+      else if(sell){newT=preT*0.75; label="쿼터매도 ×0.75";}
+      else if(part==="full"){newT=preT+1; label="1회매수 +1";}
+      else if(part==="half"){newT=preT+0.5; label="절반매수 +½";}
+      ok=(label!=="");
+    }
+    if(!ok){box.style.display="none";return;}
+    newT=Math.max(0,newT);
+    box.innerHTML='<div class="tsug-t">이 체결로 회차 <b>T '+trimT(preT)+' → '+trimT(newT)+'</b> ('+label+')</div>'+
+      '<div class="tsug-sub">v4.0은 T를 직접 갱신해야 합니다. 맞으면 적용하세요.</div>'+
+      '<div class="tsug-row"><button class="tsug-ok" id="tsugOk" type="button">적용</button><button class="tsug-no" id="tsugNo" type="button">닫기</button></div>';
+    box.style.display="block";
+    $("tsugOk").addEventListener("click",function(){
+      S.t4=Number(newT.toFixed(4)); if(S.t4<0)S.t4=0;
+      var toRev=(mode==="normal"&&S.t4>split-1);
+      if(toRev)S.mode4="reverse";   // 소진 시 리버스 자동 전환
+      save(); syncSettingsUI(); render(); box.style.display="none";
+      toast("T "+trimT(preT)+" → "+trimT(S.t4)+" 반영"+(toRev?" · 리버스 전환":""));
+    });
+    $("tsugNo").addEventListener("click",function(){box.style.display="none";});
   }
 
   function render(){
@@ -1042,12 +1092,13 @@
 
   // ---- ledger ----
   function ledgerState(){
-    var hold=0,avg=0,real=0,rows=[];
+    var hold=0,avg=0,real=0,rows=[],buyAmt=0,sellAmt=0;
     S.ledger.forEach(function(r,idx){
       var bq=toNum(r.buyQty!=null?r.buyQty:r.buy);
       var sq=toNum(r.sellQty!=null?r.sellQty:r.sell);
       var bp=toNum(r.buyPrice!=null?r.buyPrice:r.close);   // 매수 = 종가(LOC)
       var sp=toNum(r.sellPrice!=null?r.sellPrice:r.close);  // 매도 = 종가 or 지정가
+      buyAmt+=bp*bq; sellAmt+=sp*sq;
       var prevAvg=avg, prevHold=hold;
       var afterBuyQ=prevHold+bq;
       var afterBuyCost=prevAvg*prevHold + bp*bq;
@@ -1058,7 +1109,7 @@
       real+=dayReal;
       rows.push({i:idx+1,date:r.date||"",buyQty:bq,buyPrice:bp,sellQty:sq,sellPrice:sp,hold:hold,avg:avg,real:dayReal,cum:real});
     });
-    return {hold:hold,avg:avg,real:real,rows:rows};
+    return {hold:hold,avg:avg,real:real,rows:rows,buyAmt:buyAmt,sellAmt:sellAmt};
   }
   function fmtDate(iso){
     if(!iso)return "";
@@ -1100,7 +1151,11 @@
     var st=ledgerState();
     S.avg=st.avg?Number(st.avg.toFixed(4)):0;
     S.qty=st.hold>0?st.hold:0;
+    // 잔금 자동계산: 원금 − 누적매수 + 누적매도 (v4 1회매수금·쿼터매수 기준)
+    var c=(S.seed||0)-st.buyAmt+st.sellAmt; if(c<0)c=0;
+    S.cash4=Math.round(c);
     $("inAvg").value=S.avg||"";$("inQty").value=S.qty||"";
+    if($("v4Cash"))$("v4Cash").value=S.cash4;
     save();render();
     return st;
   }
@@ -1463,7 +1518,9 @@
     $("inQty").value=S.qty||"";
     $("inPrice").value=S.price||"";
     syncSettingsUI();
-    var dd=new Date(),pad=function(n){return(n<10?"0":"")+n;};
+    var pad=function(n){return(n<10?"0":"")+n;};
+    var _n=new Date(),_u=_n.getTime()+_n.getTimezoneOffset()*60000,dd=new Date(_u+9*3600000);
+    dd.setDate(dd.getDate()-1);   // 한국 기준 전일자 (미국장 시차 반영: 어젯밤 세팅→새벽 체결→아침 기록)
     $("ledDate").value=dd.getFullYear()+"-"+pad(dd.getMonth()+1)+"-"+pad(dd.getDate());
     render(); renderLedger();
     if(S.qty>0){fetchQuote();}   // 새로고침 시 1회 자동 조회
@@ -1560,10 +1617,12 @@
       if(bq<=0&&sq<=0){toast("매수 또는 매도 수량을 입력하세요");return;}
       if(bq>0&&bp<=0){toast("매수가를 입력하세요");return;}
       if(sq>0&&sp<=0){toast("매도가를 입력하세요");return;}
+      var preT=toNum(S.t4)||0, preCash=toNum(S.cash4)||S.seed||0;   // v4 T제안용 사전 상태
       S.ledger.push({date:$("ledDate").value||"",buyQty:bq,buyPrice:bp,sellQty:sq,sellPrice:sp});
       $("ledBuyQty").value="";$("ledBuyPx").value="";$("ledSellQty").value="";$("ledSellPx").value="";
       renderLedger();
       var st=applyLedgerToPosition();
+      offerTSuggestion({bq:bq,bp:bp,sq:sq,sp:sp}, preT, preCash);
       toast(st.hold>0?"기록 추가 · 포지션 갱신":"기록 추가 · 보유 0(신규)");
     });
     $("ledPushBtn").addEventListener("click",function(){
