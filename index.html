@@ -61,6 +61,10 @@
     padding:9px;border-radius:8px;cursor:pointer;border:1px solid var(--line);-webkit-appearance:none;appearance:none}
   .tsug-box .tsug-ok{background:var(--buy);border-color:var(--buy);color:#fff}
   .tsug-box .tsug-no{background:var(--surface2);color:var(--dim)}
+  .budget-warn{border:1px solid var(--sell);background:rgba(201,122,110,.10);border-radius:10px;padding:11px 13px;margin-bottom:12px}
+  .budget-warn .bw-t{font-size:13px;font-weight:700;color:var(--sell)}
+  .budget-warn .bw-s{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.5}
+  .budget-warn b{color:var(--txt);font-family:var(--mono)}
 
   /* T-gauge */
   .gauge-wrap{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px}
@@ -639,7 +643,7 @@
 </div><!-- /marketView -->
 
 <footer class="site-foot">
-  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.4.2</b></div>
+  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.4.3</b></div>
   <div class="foot-line">© 2026 JJAIHUN. All rights reserved.</div>
   <div class="foot-line">For 투자메 use only.</div>
   <div class="foot-line dim">무단 배포 및 사용을 금지합니다.</div>
@@ -893,7 +897,7 @@
       return;
     }
     var tStr=targetPts.toFixed(targetPts%1?1:0);
-    var orders=[];
+    var orders=[], buyWarn="";
     if(S.version==="v1"){
       var h1=u/2;
       orders.push({cls:"buy",name:"매수 ① 평단",tag:"LOC 매수",note:"1/2",price:avg,qty:Math.floor(h1/avg)});
@@ -919,10 +923,12 @@
         }
         var bonNote=(qRatio>0?"나머지 "+fracLabel(1-qRatio):"전량")+" · +"+tStr+"% · 사이클 종료";
         orders.push({cls:"sell",name:(qRatio>0?"매도 ② 본":"매도 · 전량"),tag:"지정가 매도",note:bonNote,price:bonPrice,qty:qty-q1,sell:true});
+        buyWarn=budgetWarnHTML(T<bd, u, buyAdj, S.split, S.seed);
       }
     }
 
     paintOrders(box,orders);
+    if(buyWarn) box.insertAdjacentHTML("afterbegin", buyWarn);
   }
 
   function paintValuation(basis){
@@ -939,6 +945,18 @@
       cUpnl.textContent="—"; cUpnl.className="v num";
       cRoi.textContent="—"; cRoi.className="v num";
     }
+  }
+
+  function budgetWarnHTML(firstHalf, oneBuy, refPrice, split, seed){
+    if(refPrice<=0||oneBuy<=0) return "";
+    var per=firstHalf?oneBuy/2:oneBuy;
+    if(per>=refPrice) return "";
+    var mult=firstHalf?2:1;
+    var maxSplit=Math.max(1,Math.floor((seed||0)/(mult*refPrice)));
+    var needSeed=Math.ceil(mult*refPrice*split);
+    return '<div class="budget-warn"><div class="bw-t">⚠ 예산 부족 · '+(firstHalf?"전반전 ":"")+'매수 0주로 체결 안 됨</div>'+
+      '<div class="bw-s">1회매수금'+(firstHalf?"의 절반":"")+' ≈ <b>'+fmtUSD0(per)+'</b> &lt; 1주 <b>'+fmtUSD(refPrice)+'</b></div>'+
+      '<div class="bw-s">해결 · 분할 <b>'+maxSplit+'</b> 이하로 축소 · 또는 원금 <b>'+fmtUSD0(needSeed)+'</b> 이상으로 상향</div></div>';
   }
 
   function paintOrders(box,orders){
@@ -1082,6 +1100,8 @@
     orders.push({cls:"sell",name:"매도 ① 쿼터",tag:"LOC 매도",note:"보유 1/4 · 별지점",price:sellPt,qty:q1,sell:true});
     orders.push({cls:"sell",name:"매도 ② 본",tag:"지정가 매도",note:"나머지 · +"+(profit*100)+"% ("+(isSoxl?"SOXL":"TQQQ")+")",price:bonPrice,qty:qty-q1,sell:true});
     paintOrders(box,orders);
+    var bw4=budgetWarnHTML(firstHalf, oneBuy, buyPt, split, S.seed);
+    if(bw4) box.insertAdjacentHTML("afterbegin", bw4);
 
     hint.innerHTML="별% <b>"+starPct.toFixed(2)+"%</b> → 별지점 <b>"+fmtUSD(starPoint)+"</b> (매수 "+fmtUSD(buyPt)+" / 매도 "+fmtUSD(sellPt)+")"+
       "<br>1회매수금 = 잔금÷("+split+"−T) = <b>"+fmtUSD0(oneBuy)+"</b> · "+(firstHalf?"전반전(절반·절반)":"후반전(전액 별지점)")+
