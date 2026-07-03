@@ -33,15 +33,16 @@
   .theme-btn{background:var(--surface);border:1px solid var(--line);color:var(--dim);width:34px;height:34px;
     border-radius:9px;font-size:15px;cursor:pointer;flex:0 0 auto;line-height:1;-webkit-appearance:none;appearance:none}
   .day-pill{font-size:10.5px;font-weight:700;letter-spacing:.02em;padding:3px 8px;border-radius:99px;
-    background:var(--surface2);border:1px solid var(--line);color:var(--faint);text-transform:none;cursor:pointer;flex:0 0 auto}
+    background:var(--surface2);border:1px solid var(--line);color:var(--faint);text-transform:none;cursor:pointer;flex:0 0 auto;white-space:nowrap}
   .day-pill.on{background:rgba(91,143,212,.14);border-color:var(--buy);color:var(--buy)}
-  .fx-line{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:9px;text-align:right}
+  .fx-line{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:9px;display:flex;flex-wrap:wrap;justify-content:flex-end;column-gap:12px;row-gap:3px}
+  .fx-line .fxseg{white-space:nowrap}
   .fx-line b{color:var(--dim)}
   .fx-line .fxr{cursor:pointer;color:var(--navy-br);margin-left:6px}
   .loc-cap{font-size:11.5px;color:var(--dim);margin-top:11px;padding:9px 12px;border:1px dashed var(--line);
-    border-radius:9px;font-family:var(--mono)}
+    border-radius:9px;font-family:var(--mono);line-height:1.6;word-break:keep-all}
   .loc-cap b{color:var(--txt)}
-  .ord-warn{color:var(--sell);font-weight:700}
+  .ord-warn{color:var(--sell);font-weight:700;white-space:nowrap}
   .px-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
   .px-meta{font-family:var(--mono);font-size:11px;color:var(--faint)}
   .px-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
@@ -56,7 +57,7 @@
   .yd-row b{font-family:var(--mono);color:var(--txt)}
   .yd-row .q{font-family:var(--mono);color:var(--faint)}
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;line-height:1.4}
+  html,body{background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;line-height:1.45;word-break:keep-all;overflow-wrap:break-word}
   body{max-width:480px;margin:0 auto;padding:0 0 56px;min-height:100vh;
        padding-left:max(0px,env(safe-area-inset-left));padding-right:max(0px,env(safe-area-inset-right))}
   .num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
@@ -140,17 +141,17 @@
 
   /* order tickets */
   .ticket{background:var(--surface);border:1px solid var(--line);border-radius:12px;
-    padding:14px 14px 12px;margin-bottom:10px;position:relative;overflow:hidden}
+    padding:15px 15px 13px;margin-bottom:11px;position:relative;overflow:hidden}
   .ticket::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
   .ticket.buy::before{background:var(--buy)}
   .ticket.sell::before{background:var(--sell)}
   .ticket.off{opacity:.4}
-  .tk-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
-  .tk-name{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
-  .tk-tag{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:.03em}
+  .tk-head{display:block;margin-bottom:10px}
+  .tk-name{font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:8px;min-width:0}
+  .tk-tag{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;flex:0 0 auto}
   .buy .tk-tag{background:var(--buy-bg);color:var(--buy)}
   .sell .tk-tag{background:var(--sell-bg);color:var(--sell)}
-  .tk-note{font-size:11px;color:var(--faint)}
+  .tk-note{font-size:11.5px;color:var(--faint);margin-top:5px;line-height:1.55}
   .tk-body{display:flex;align-items:flex-end;gap:14px}
   .tk-price{font-family:var(--mono);font-size:26px;font-weight:700;line-height:1}
   .tk-qty{font-family:var(--mono);font-size:15px;color:var(--dim);font-weight:600;padding-bottom:2px}
@@ -699,7 +700,7 @@
 </div><!-- /marketView -->
 
 <footer class="site-foot">
-  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.6.0</b></div>
+  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.6.1</b></div>
   <div class="foot-line">© 2026 JJAIHUN. All rights reserved.</div>
   <div class="foot-line">For 투자메 use only.</div>
   <div class="foot-line dim">무단 배포 및 사용을 금지합니다.</div>
@@ -802,7 +803,7 @@
     var fx=fxInfo();
     if(!fx||!(oneBuy>0)){el.style.display="none";return;}
     el.style.display="block";
-    el.innerHTML="1회 매수금 <b>"+fmtUSD0(oneBuy)+"</b> ≈ <b>"+fmtKRW(oneBuy)+"</b> · USD/KRW "+fx.r.toFixed(2)+" ("+fx.label+")<span class='fxr' id='fxRefresh'>↻</span>";
+    el.innerHTML="<span class='fxseg'>1회 매수금 <b>"+fmtUSD0(oneBuy)+"</b> ≈ <b>"+fmtKRW(oneBuy)+"</b></span><span class='fxseg'>USD/KRW "+fx.r.toFixed(2)+" ("+fx.label+")<span class='fxr' id='fxRefresh'>↻</span></span>";
     var r=$("fxRefresh");
     if(r)r.addEventListener("click",function(){
       fetchFX(true).then(function(){render();toast("환율 갱신 ₩"+(DB.fx&&DB.fx.r?DB.fx.r.toFixed(2):""));})
@@ -1869,7 +1870,7 @@
       }).catch(function(){toast("조회 실패 — 직접 입력하세요");});
     });
     $("verInfo").addEventListener("click",function(){$("verModal").style.display="flex";});
-    // v2.6.0 신규 리스너
+    // v2.6.1 신규 리스너
     $("themeBtn").addEventListener("click",function(){
       DB.theme=(DB.theme==="light"?"dark":"light"); save(); applyTheme(DB.theme);
     });
