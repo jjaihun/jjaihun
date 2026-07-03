@@ -30,15 +30,22 @@
     --sell:#B4584A; --sell-bg:#F6E9E6;
     --gain:#2F62B0; --loss:#BE5A50; --hdr-bg:rgba(242,243,246,.94);
   }
+  html[data-theme="light"] .ticket,html[data-theme="light"] details,html[data-theme="light"] .chip,
+  html[data-theme="light"] .baro-card,html[data-theme="light"] .newcycle{
+    border-color:#E4E7EE;box-shadow:0 1px 2px rgba(16,24,40,.05),0 2px 8px rgba(16,24,40,.05)}
+  html[data-theme="light"] header{box-shadow:0 1px 0 rgba(16,24,40,.06)}
   .theme-btn{background:var(--surface);border:1px solid var(--line);color:var(--dim);width:34px;height:34px;
     border-radius:9px;font-size:15px;cursor:pointer;flex:0 0 auto;line-height:1;-webkit-appearance:none;appearance:none}
   .day-pill{font-size:10.5px;font-weight:700;letter-spacing:.02em;padding:3px 8px;border-radius:99px;
     background:var(--surface2);border:1px solid var(--line);color:var(--faint);text-transform:none;cursor:pointer;flex:0 0 auto;white-space:nowrap}
   .day-pill.on{background:rgba(91,143,212,.14);border-color:var(--buy);color:var(--buy)}
-  .fx-line{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:9px;display:flex;flex-wrap:wrap;justify-content:flex-end;column-gap:12px;row-gap:3px}
-  .fx-line .fxseg{white-space:nowrap}
+  .fx-line{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:10px;text-align:right;line-height:1.8}
+  .fx-line .fxseg{display:block;white-space:nowrap}
+  .fx-line .fxseg b{color:var(--dim)}
   .fx-line b{color:var(--dim)}
-  .fx-line .fxr{cursor:pointer;color:var(--navy-br);margin-left:6px}
+  .fx-line .fxr{cursor:pointer;color:var(--navy-br);margin-left:8px;display:inline-block;
+    padding:3px 9px;border:1px solid var(--line);border-radius:7px;background:var(--surface2);
+    font-size:12px;font-weight:700;line-height:1.2;vertical-align:middle}
   .loc-cap{font-size:11.5px;color:var(--dim);margin-top:11px;padding:9px 12px;border:1px dashed var(--line);
     border-radius:9px;font-family:var(--mono);line-height:1.6;word-break:keep-all}
   .loc-cap b{color:var(--txt)}
@@ -72,14 +79,14 @@
   header .ttl span{color:var(--faint);font-weight:500;font-size:12px;margin-left:6px}
   .tkr{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--navy-br);
     border:1px solid var(--line);border-radius:6px;padding:4px 9px;background:var(--surface)}
-  .tkr-sel{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--navy-br);
+  .tkr-sel{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--navy-br);
     border:1px solid var(--line);border-radius:7px;padding:6px 28px 6px 11px;background:var(--surface);
     outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%235B82C4' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
     background-repeat:no-repeat;background-position:right 10px center}
   .tkr-sel:focus{border-color:var(--navy-br)}
 
-  section{padding:18px}
+  section{padding:20px 18px 12px}
   .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);
     font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
   .eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
@@ -122,7 +129,7 @@
   .field .pre{color:var(--faint);font-family:var(--mono);font-size:18px}
   .field input{flex:1;width:100%;background:transparent;border:none;color:var(--txt);
     font-family:var(--mono);font-size:22px;font-weight:700;outline:none;min-width:0;padding:2px 0}
-  .field input::placeholder{color:#3a4049}
+  .field input::placeholder{color:var(--faint);opacity:.55}
   .field:focus-within{border-color:var(--navy-br)}
   .price-field{margin-top:12px}
   .price-field .row{align-items:center}
@@ -133,15 +140,15 @@
   .fetch-btn:active{opacity:.8}
   .fetch-btn:disabled{opacity:.5;cursor:default}
 
-  .chips{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .chips{display:flex;gap:9px;margin-top:13px;flex-wrap:wrap}
   .chip{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;
     padding:9px 11px;text-align:center}
-  .chip .k{font-size:10.5px;color:var(--faint);font-weight:600;letter-spacing:.03em;margin-bottom:4px}
-  .chip .v{font-family:var(--mono);font-size:15px;font-weight:700}
+  .chip .k{font-size:10.5px;color:var(--faint);font-weight:600;letter-spacing:.05em;margin-bottom:5px}
+  .chip .v{font-family:var(--mono);font-size:16px;font-weight:700;letter-spacing:-.01em}
 
   /* order tickets */
-  .ticket{background:var(--surface);border:1px solid var(--line);border-radius:12px;
-    padding:15px 15px 13px;margin-bottom:11px;position:relative;overflow:hidden}
+  .ticket{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:16px 16px 14px;margin-bottom:12px;position:relative;overflow:hidden}
   .ticket::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
   .ticket.buy::before{background:var(--buy)}
   .ticket.sell::before{background:var(--sell)}
@@ -153,25 +160,25 @@
   .sell .tk-tag{background:var(--sell-bg);color:var(--sell)}
   .tk-note{font-size:11.5px;color:var(--faint);margin-top:5px;line-height:1.55}
   .tk-body{display:flex;align-items:flex-end;gap:14px}
-  .tk-price{font-family:var(--mono);font-size:26px;font-weight:700;line-height:1}
+  .tk-price{font-family:var(--mono);font-size:29px;font-weight:700;line-height:1;letter-spacing:-.02em}
   .tk-qty{font-family:var(--mono);font-size:15px;color:var(--dim);font-weight:600;padding-bottom:2px}
   .tk-qty b{color:var(--txt);font-weight:700}
   .tk-amt{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--faint);padding-bottom:3px}
   .tk-copy{display:flex;gap:7px;margin-top:11px}
   .cbtn{flex:1;background:var(--surface2);border:1px solid var(--line);color:var(--dim);
-    font-family:var(--sans);font-size:12px;font-weight:700;padding:9px;border-radius:8px;cursor:pointer;
+    font-family:var(--sans);font-size:12.5px;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;
     transition:background .15s,color .15s}
   .cbtn:active{background:var(--navy);color:#fff;border-color:var(--navy)}
   .cbtn.ok{background:var(--navy);color:#fff;border-color:var(--navy)}
 
-  .newcycle{background:var(--surface);border:1px dashed var(--navy);border-radius:12px;padding:18px 16px;text-align:center}
+  .newcycle{background:var(--surface);border:1px dashed var(--navy);border-radius:14px;padding:19px 16px;text-align:center;margin-bottom:12px}
   .newcycle .big{font-size:15px;font-weight:700;margin-bottom:6px}
   .newcycle .sub{font-size:12.5px;color:var(--dim);line-height:1.5}
   .newcycle .amt{font-family:var(--mono);color:var(--navy-br);font-weight:700}
 
   /* collapsible */
-  details{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-top:10px;overflow:hidden}
-  summary{list-style:none;cursor:pointer;padding:14px 16px;font-size:13px;font-weight:700;
+  details{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-top:12px;overflow:hidden}
+  summary{list-style:none;cursor:pointer;padding:15px 16px;font-size:14px;font-weight:700;
     display:flex;align-items:center;justify-content:space-between;color:var(--txt)}
   summary::-webkit-details-marker{display:none}
   summary .arr{color:var(--faint);transition:transform .2s;font-family:var(--mono)}
@@ -182,7 +189,7 @@
   .set-row:last-child{border-bottom:none}
   .set-row .lab{font-size:13px;color:var(--dim);font-weight:600}
   .set-row input,.set-row select{background:var(--surface2);border:1px solid var(--line);color:var(--txt);
-    font-family:var(--mono);font-size:15px;font-weight:700;padding:8px 10px;border-radius:8px;
+    font-family:var(--mono);font-size:16px;font-weight:700;padding:9px 11px;border-radius:9px;
     text-align:right;width:120px;outline:none}
   .set-row select{text-align:left}
   .set-row .ro{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--navy-br)}
@@ -191,10 +198,10 @@
   .led-add{margin-bottom:12px}
   .ld-date{width:100%;max-width:100%;min-width:0;-webkit-appearance:none;appearance:none;
     background:var(--surface2);border:1px solid var(--line);color:var(--txt);
-    font-family:var(--mono);font-size:14px;font-weight:700;padding:9px 10px;border-radius:8px;outline:none;margin-bottom:8px}
+    font-family:var(--mono);font-size:16px;font-weight:700;padding:10px 11px;border-radius:9px;outline:none;margin-bottom:8px}
   .led-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .led-grid input{background:var(--surface2);border:1px solid var(--line);color:var(--txt);
-    font-family:var(--mono);font-size:14px;font-weight:700;padding:9px 8px;border-radius:8px;text-align:center;outline:none;width:100%}
+    font-family:var(--mono);font-size:16px;font-weight:700;padding:10px 8px;border-radius:9px;text-align:center;outline:none;width:100%}
   .led-grid input:focus,.ld-date:focus{border-color:var(--navy-br)}
   .led-add input::placeholder{color:#454c57;font-weight:600}
   .led-hint{font-size:11px;color:var(--faint);line-height:1.55;margin:2px 2px 12px}
@@ -212,7 +219,7 @@
   .lr-foot{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:7px;padding-top:6px;border-top:1px solid var(--line)}
   .btn-row{display:flex;gap:8px;margin-bottom:10px}
   .abtn{flex:1;border:1px solid var(--navy);background:var(--navy);color:#fff;font-weight:700;
-    font-size:13px;padding:10px;border-radius:9px;cursor:pointer;font-family:var(--sans)}
+    font-size:13.5px;padding:12px;border-radius:10px;cursor:pointer;font-family:var(--sans)}
   .abtn.ghost{background:transparent;color:var(--dim);border-color:var(--line)}
   .abtn:active{opacity:.8}
   table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px}
@@ -237,8 +244,8 @@
   /* toast */
   /* tabs */
   .tabs{display:flex;margin:0 -18px;padding:0 18px;border-bottom:1px solid var(--line)}
-  .tab{flex:1;background:none;border:none;color:var(--dim);font-family:var(--sans);font-size:13px;
-    font-weight:700;padding:11px 0;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab{flex:1;background:none;border:none;color:var(--dim);font-family:var(--sans);font-size:13.5px;
+    font-weight:700;padding:12px 0;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
   .tab.active{color:var(--txt);border-bottom-color:var(--navy-br)}
   /* portfolio */
   .pf-hero{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 16px}
@@ -700,7 +707,7 @@
 </div><!-- /marketView -->
 
 <footer class="site-foot">
-  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.6.1</b></div>
+  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.7.0</b></div>
   <div class="foot-line">© 2026 JJAIHUN. All rights reserved.</div>
   <div class="foot-line">For 투자메 use only.</div>
   <div class="foot-line dim">무단 배포 및 사용을 금지합니다.</div>
@@ -767,10 +774,15 @@
   var CUR_SKEY="", PREV_SKEY="";   // 현재/직전 거래 세션 키 (updateOrderTitle이 갱신)
 
   // ---- 테마 ----
+  function resolveTheme(t){
+    if(t==="light"||t==="dark")return t;
+    try{return (window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";}catch(e){return "dark";}
+  }
   function applyTheme(t){
-    document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");
-    var m=document.querySelector('meta[name="theme-color"]'); if(m)m.setAttribute("content",t==="light"?"#F2F3F6":"#0F1115");
-    var b=$("themeBtn"); if(b)b.textContent=(t==="light"?"☀":"☾");
+    var r=resolveTheme(t);
+    document.documentElement.setAttribute("data-theme",r);
+    var m=document.querySelector('meta[name="theme-color"]'); if(m)m.setAttribute("content",r==="light"?"#F2F3F6":"#0F1115");
+    var b=$("themeBtn"); if(b)b.textContent=(t==="auto"?"◐":(t==="light"?"☀":"☾"));
   }
 
   // ---- 환율 (USD/KRW) ----
@@ -791,8 +803,8 @@
       return fetchTimeout(urls[i++],6000).then(function(t){
         var j=JSON.parse(t),r=j&&j.rates&&j.rates.KRW;
         if(!(r>0))throw new Error("no-krw");
-        var d=new Date();
-        DB.fx={r:r,d:(d.getMonth()+1)+"/"+d.getDate(),ts:Date.now()};
+        var d=new Date(),pad=function(n){return(n<10?"0":"")+n;};
+        DB.fx={r:r,d:d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()),ts:Date.now()};
         save();
       }).catch(function(e){if(i>=urls.length)throw e;return next();});
     }
@@ -803,7 +815,9 @@
     var fx=fxInfo();
     if(!fx||!(oneBuy>0)){el.style.display="none";return;}
     el.style.display="block";
-    el.innerHTML="<span class='fxseg'>1회 매수금 <b>"+fmtUSD0(oneBuy)+"</b> ≈ <b>"+fmtKRW(oneBuy)+"</b></span><span class='fxseg'>USD/KRW "+fx.r.toFixed(2)+" ("+fx.label+")<span class='fxr' id='fxRefresh'>↻</span></span>";
+    var fxd=(toNum(DB.fxman)>0)?"수동":(DB.fx&&DB.fx.d?DB.fx.d:"자동");
+    el.innerHTML="<span class='fxseg'>1회 매수금 <b>"+fmtUSD0(oneBuy)+"</b> ≈ <b>"+fmtKRW(oneBuy)+"</b></span>"+
+                 "<span class='fxseg'>USD/KRW <b>₩"+fx.r.toFixed(2)+"</b> <span style='color:var(--faint)'>("+fxd+")</span><span class='fxr' id='fxRefresh'>↻</span></span>";
     var r=$("fxRefresh");
     if(r)r.addEventListener("click",function(){
       fetchFX(true).then(function(){render();toast("환율 갱신 ₩"+(DB.fx&&DB.fx.r?DB.fx.r.toFixed(2):""));})
@@ -894,7 +908,7 @@
       if(!b.daily||typeof b.daily!=="object")b.daily={ord:"",rec:""};
       if(!b.snaps||typeof b.snaps!=="object")b.snaps={};
       if(b.px===undefined)b.px=null;});
-    if(!DB.theme)DB.theme="dark";
+    if(!DB.theme)DB.theme="auto";
     if(DB.fx===undefined)DB.fx=null;
     if(DB.fxman===undefined)DB.fxman="";
     S=DB.books[DB.current];
@@ -1870,10 +1884,17 @@
       }).catch(function(){toast("조회 실패 — 직접 입력하세요");});
     });
     $("verInfo").addEventListener("click",function(){$("verModal").style.display="flex";});
-    // v2.6.1 신규 리스너
+    // v2.7.0 신규 리스너
     $("themeBtn").addEventListener("click",function(){
-      DB.theme=(DB.theme==="light"?"dark":"light"); save(); applyTheme(DB.theme);
+      DB.theme=(DB.theme==="auto"?"light":(DB.theme==="light"?"dark":"auto"));
+      save(); applyTheme(DB.theme);
+      toast("테마: "+(DB.theme==="auto"?"시스템 자동":(DB.theme==="light"?"라이트":"다크")));
     });
+    try{
+      var mq=window.matchMedia("(prefers-color-scheme: light)");
+      var onScheme=function(){if(DB.theme==="auto")applyTheme("auto");};
+      if(mq.addEventListener)mq.addEventListener("change",onScheme); else if(mq.addListener)mq.addListener(onScheme);
+    }catch(e){}
     $("ordDoneBtn").addEventListener("click",function(){
       if(!S.daily)S.daily={ord:"",rec:""};
       S.daily.ord=(S.daily.ord===CUR_SKEY?"":CUR_SKEY); save(); updateOrderTitle();
