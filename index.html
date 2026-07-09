@@ -52,11 +52,6 @@
   .ord-warn{color:var(--sell);font-weight:700;white-space:nowrap}
   .ord-reject{color:var(--sell);font-weight:700;white-space:nowrap}
   .ord-risk{color:#C99A3C;font-weight:700;white-space:nowrap}
-  .ticket.reject{opacity:.5}
-  .ticket.reject::before{background:var(--sell)!important}
-  .tk-skip{font-size:11px;color:var(--sell);font-weight:700;margin-top:7px;
-    padding:6px 9px;background:var(--sell-bg);border-radius:7px;line-height:1.5;word-break:keep-all}
-  .cbtn.dis{opacity:.35;pointer-events:none}
   .px-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
   .px-meta{font-family:var(--mono);font-size:11px;color:var(--faint)}
   .px-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
@@ -737,7 +732,7 @@
 </div><!-- /marketView -->
 
 <footer class="site-foot">
-  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.9.0</b></div>
+  <div class="foot-line foot-ver">무한매수 콘솔 <b>v2.9.1</b></div>
   <div class="foot-line">© 2026 JJAIHUN. All rights reserved.</div>
   <div class="foot-line">For 투자메 use only.</div>
   <div class="foot-line dim">무단 배포 및 사용을 금지합니다.</div>
@@ -1191,14 +1186,14 @@
     if(avg<=0||qty<=0){
       var lad=ladderOrders(u,S.price);
       if(lad.length){
-        var capN=r2(S.price*1.10);
+        var capN=r2(S.price*1.20);
         lad.forEach(function(o){if(o.cls==="buy"&&o.price>capN)o.warn=true;});
         paintOrders(box,lad);
         box.insertAdjacentHTML("afterbegin",'<div class="newcycle"><div class="big">신규 1회차 · 처음매수 주문표</div>'+
           '<div class="sub">1회 매수금 <span class="amt">'+fmtUSD0(u)+'</span> · 큰수(종가×1.12) LOC로 종가 체결 + 폭락 대비 하방 1주 사다리 (라오어 공식). 사다리는 폭락 시에만 추가 체결되고, 평시엔 큰수 주문만 체결됩니다.</div></div>');
         var capEl0=$("locCap");
         capEl0.style.display="block";
-        capEl0.innerHTML="LOC 매수 상한(현재가×1.10) <b>"+fmtUSD(capN)+"</b> · 미국 현지 브로커 규정(±10%)으로 거부될 수 있습니다";
+        capEl0.innerHTML="LOC 매수 상한(현재가×1.20) <b>"+fmtUSD(capN)+"</b> · 미국 현지 브로커 규정(±10%)으로 거부될 수 있습니다";
         paintFx(u); saveSnap(lad);
       }else{
         box.innerHTML='<div class="newcycle"><div class="big">신규 1회차로 사이클 시작</div>'+
@@ -1239,12 +1234,12 @@
       }
     }
 
-    var cap22=S.price>0?r2(S.price*1.10):0;
+    var cap22=S.price>0?r2(S.price*1.20):0;
     if(cap22>0)orders.forEach(function(o){if(o.cls==="buy"&&o.qty>0&&o.price>cap22)o.warn=true;});
     paintOrders(box,orders);
     if(buyWarn) box.insertAdjacentHTML("afterbegin", buyWarn);
     var capEl=$("locCap");
-    if(cap22>0){capEl.style.display="block";capEl.innerHTML="LOC 매수 상한(현재가×1.10) <b>"+fmtUSD(cap22)+"</b> · 미국 현지 브로커 규정(±10%)으로 거부될 수 있습니다";}
+    if(cap22>0){capEl.style.display="block";capEl.innerHTML="LOC 매수 상한(현재가×1.20) <b>"+fmtUSD(cap22)+"</b> · 미국 현지 브로커 규정(±10%)으로 거부될 수 있습니다";}
     else capEl.style.display="none";
     saveSnap(orders); paintFx(u);
     CHART_LV={avg:avg,star:sellAdj,bon:bonPrice,starLbl:"별지점"};
@@ -1280,7 +1275,7 @@
   }
 
   // 미국 현지 브로커 리스크관리 규정: 현재가 대비 과도한 지정가는 현지에서 거부(일반 ±10%)
-  var REJECT_MULT=1.10, RISK_MULT=1.08;
+  var REJECT_MULT=1.20, RISK_MULT=1.15;
   function locFlag(o){
     if(!S||!(S.price>0)||o.cls!=="buy"||!(o.price>0)) return null;
     var ratio=o.price/S.price;
@@ -1292,21 +1287,19 @@
     orders.forEach(function(o,i){
       var amt=o.price*o.qty;
       var flag=locFlag(o);
-      var reject=flag&&flag.kind==="reject";
       var badge="";
       if(flag&&flag.kind==="reject") badge=' · <span class="ord-reject">✕ 현지 거부 예상 (+'+flag.over.toFixed(0)+'%)</span>';
       else if(flag&&flag.kind==="risk") badge=' · <span class="ord-risk">⚠ 거부 경계 (+'+flag.over.toFixed(0)+'%)</span>';
       var el=document.createElement("div");
-      el.className="ticket "+o.cls+(o.qty<=0?" off":"")+(reject?" reject":"");
+      el.className="ticket "+o.cls+(o.qty<=0?" off":"");
       el.innerHTML=
         '<div class="tk-head"><div class="tk-name"><span class="tk-tag">'+o.tag+'</span>'+o.name+'</div>'+
         '<div class="tk-note">'+o.note+badge+'</div></div>'+
         '<div class="tk-body"><div class="tk-price num">'+fmtUSD(o.price)+'</div>'+
         '<div class="tk-qty num"><b>'+o.qty+'</b>주</div>'+
         '<div class="tk-amt num">'+fmtUSD0(amt)+'</div></div>'+
-        (reject?'<div class="tk-skip">현재가 대비 +10% 초과 · 현지에서 거부될 가능성이 큽니다. 이 주문은 건너뛰는 것을 권장합니다.</div>':'')+
         '<div class="tk-copy">'+
-          '<button class="cbtn'+(reject?' dis':'')+'" data-c="'+o.price.toFixed(2)+'" data-l="가격">가격 복사</button>'+
+          '<button class="cbtn" data-c="'+o.price.toFixed(2)+'" data-l="가격">가격 복사</button>'+
           '<button class="cbtn" data-c="'+o.qty+'" data-l="수량">수량 복사</button>'+
         '</div>';
       box.appendChild(el);
@@ -1387,14 +1380,14 @@
       var u0=split>0?(S.seed/split):0;
       var lad4=ladderOrders(u0,S.price);
       if(lad4.length){
-        var capN4=r2(S.price*1.10);
+        var capN4=r2(S.price*1.20);
         lad4.forEach(function(o){if(o.cls==="buy"&&o.price>capN4)o.warn=true;});
         paintOrders(box,lad4);
         box.insertAdjacentHTML("afterbegin",'<div class="newcycle"><div class="big">신규 1회차 · 처음매수 주문표</div>'+
           '<div class="sub">1회 매수금 <span class="amt">'+fmtUSD0(u0)+'</span>(원금÷'+split+') · 큰수(종가×1.12) LOC 종가 체결 + 폭락 대비 하방 1주 사다리 (라오어 공식). 평시엔 큰수 주문만 체결됩니다.</div></div>');
         var capEl4=$("locCap");
         capEl4.style.display="block";
-        capEl4.innerHTML="LOC 매수 상한(현재가×1.10) <b>"+fmtUSD(capN4)+"</b> · 미국 현지 브로커 규정(±10%)으로 거부될 수 있습니다";
+        capEl4.innerHTML="LOC 매수 상한(현재가×1.20) <b>"+fmtUSD(capN4)+"</b> · 미국 현지 브로커 규정(±10%)으로 거부될 수 있습니다";
         saveSnap(lad4);
       }else{
         box.innerHTML='<div class="newcycle"><div class="big">신규 1회차로 사이클 시작</div>'+
@@ -1422,11 +1415,11 @@
         var qbAmt=cash/4, buyQ=buyPt>0?Math.floor(qbAmt/buyPt):0;
         orders.push({cls:"sell",name:"매도 · 등분",tag:"LOC 매도",note:"직전보유 1/"+deung+" ("+sellQ+"주) · 첫날은 MOC 전량",price:sellPt,qty:sellQ,sell:true});
         orders.push({cls:"buy",name:"매수 · 쿼터",tag:"LOC 매수",note:"잔금/4 = "+fmtUSD0(qbAmt)+" · 별지점 아래",price:buyPt,qty:buyQ});
-        var capR=S.price>0?r2(S.price*1.10):0;
+        var capR=S.price>0?r2(S.price*1.20):0;
         if(capR>0)orders.forEach(function(o){if(o.cls==="buy"&&o.qty>0&&o.price>capR)o.warn=true;});
         paintOrders(box,orders);
         var capElR=$("locCap");
-        if(capR>0){capElR.style.display="block";capElR.innerHTML="LOC 매수 상한(현재가×1.10) <b>"+fmtUSD(capR)+"</b> · 미국 현지 브로커 규정(±10%)으로 거부될 수 있습니다";}
+        if(capR>0){capElR.style.display="block";capElR.innerHTML="LOC 매수 상한(현재가×1.20) <b>"+fmtUSD(capR)+"</b> · 미국 현지 브로커 규정(±10%)으로 거부될 수 있습니다";}
         else capElR.style.display="none";
         saveSnap(orders);
       }
@@ -1458,13 +1451,13 @@
     var q1=Math.floor(qty/4);
     orders.push({cls:"sell",name:"매도 ① 쿼터",tag:"LOC 매도",note:"보유 1/4 · 별지점",price:sellPt,qty:q1,sell:true});
     orders.push({cls:"sell",name:"매도 ② 본",tag:"지정가 매도",note:"나머지 · +"+(profit*100)+"% ("+(isSoxl?"SOXL":"TQQQ")+")",price:bonPrice,qty:qty-q1,sell:true});
-    var cap4=S.price>0?r2(S.price*1.10):0;
+    var cap4=S.price>0?r2(S.price*1.20):0;
     if(cap4>0)orders.forEach(function(o){if(o.cls==="buy"&&o.qty>0&&o.price>cap4)o.warn=true;});
     paintOrders(box,orders);
     var bw4=budgetWarnHTML(firstHalf, oneBuy, buyPt, split, S.seed);
     if(bw4) box.insertAdjacentHTML("afterbegin", bw4);
     var capEl4b=$("locCap");
-    if(cap4>0){capEl4b.style.display="block";capEl4b.innerHTML="LOC 매수 상한(현재가×1.10) <b>"+fmtUSD(cap4)+"</b> · 미국 현지 브로커 규정(±10%)으로 거부될 수 있습니다";}
+    if(cap4>0){capEl4b.style.display="block";capEl4b.innerHTML="LOC 매수 상한(현재가×1.20) <b>"+fmtUSD(cap4)+"</b> · 미국 현지 브로커 규정(±10%)으로 거부될 수 있습니다";}
     else capEl4b.style.display="none";
     saveSnap(orders); paintFx(oneBuy);
     CHART_LV={avg:avg,star:starPoint,bon:bonPrice,starLbl:"별지점"}; paintChart();
